@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react"
 import Task from "./Task"
 import TasksData from "../../utility/tasks-data"
+import Categories from "../../utility/tasks-categories"
 import Button from "../Button"
-import { MdModeEditOutline } from "react-icons/md"
 import Modal from "../Modal"
 import NewTask from "./NewTask"
 import { MdAdd } from "react-icons/md"
 import Card from "../Card"
+import Select from "../Select"
 
 const Tasks = () => {
 
@@ -14,8 +15,9 @@ const Tasks = () => {
 	const [deletingTask, setDeletingTask] = useState(null)
 	const [tasksToDelete, setTasksToDelete] = useState([])
 	const [showTaskForm, setShowTaskForm] = useState(false)
-	const [newTask, setNewTask] = useState({ title: '', date: '', category: ''})
+	const [newTask, setNewTask] = useState({ title: '', date: '', category: '' })
 	const [isSaving, setIsSaving] = useState(false)
+	const [categories, setCategories] = useState(Categories)
 
 	const checkTask = (task, value) => {
 		setDeletingTask({ ...task, checked: value })
@@ -49,7 +51,7 @@ const Tasks = () => {
 
 	const handleOnChange = (e) => {
 		const { name, value } = e.target
-		setNewTask({...newTask, [name]: value })
+		setNewTask({ ...newTask, [name]: value })
 	}
 
 	const modalTaskFormBody = () => {
@@ -63,9 +65,10 @@ const Tasks = () => {
 
 	const saveNewTaskWithDelay = (delay) => {
 		return new Promise(resolve => setTimeout(() => {
-			resolve([...tasks, {...newTask, completed: false, id: tasks.length + 1}])
+			resolve([...tasks, { ...newTask, completed: false, id: tasks.length + 1 }])
 		}, delay)
-	)}
+		)
+	}
 
 	const handleSaveTask = async () => {
 		setIsSaving(true)
@@ -73,6 +76,7 @@ const Tasks = () => {
 		setTasks(newTasks)
 		setShowTaskForm(false)
 		setIsSaving(false)
+		setNewTask({ title: '', date: '', category: '' })
 	}
 
 	const showTaskFormModal = () => {
@@ -82,20 +86,28 @@ const Tasks = () => {
 		setShowTaskForm(true)
 	}
 
-	useEffect(() => {
-		const addTaskToTempArr = () => {
-			if (deletingTask !== null && deletingTask.checked) {
-				setTasksToDelete([...tasksToDelete, deletingTask])
-			}
+	const setAddCategory = () => {
+		setCategories([...categories, { name: 'Add Category' }])
+	}
 
-			if (deletingTask !== null && !deletingTask.checked) {
-				const removeTaskToDelete = tasksToDelete.filter(
-					(elemTask) => elemTask.id !== deletingTask.id
-				)
-				setTasksToDelete(removeTaskToDelete)
-			}
+	const addTaskToTempArr = () => {
+		if (deletingTask !== null && deletingTask.checked) {
+			setTasksToDelete([...tasksToDelete, deletingTask])
 		}
 
+		if (deletingTask !== null && !deletingTask.checked) {
+			const removeTaskToDelete = tasksToDelete.filter(
+				(elemTask) => elemTask.id !== deletingTask.id
+			)
+			setTasksToDelete(removeTaskToDelete)
+		}
+	}
+
+	useEffect(() => {
+		setAddCategory()
+	}, [])
+
+	useEffect(() => {
 		addTaskToTempArr()
 	}, [deletingTask])
 
@@ -114,6 +126,15 @@ const Tasks = () => {
 				isSaving={isSaving}
 			/>
 			<div
+				style={{
+					margin: "10px 10px 0px 10px",
+					backgroundColor: "#499f6e",
+					borderRadius: "3px",
+				}}
+			>
+				<Select options={categories} />
+			</div>
+			{/* <div
 				className="taskCategoryTitle"
 				style={{
 					padding: "5px",
@@ -133,8 +154,8 @@ const Tasks = () => {
 				</div>
 				<div style={{ padding: "2px" }}>
 					<MdModeEditOutline style={{ color: "#ffffff" }} />
-				</div>
-			</div>
+				</div> 
+			</div> */}
 			{tasksToDelete.length > 0 && (
 				<div style={{ padding: "10px 10px 0px 10px" }}>
 					<Button
@@ -153,7 +174,7 @@ const Tasks = () => {
 
 			<Card content={
 				<div>
-					{tasks.map((task) => (
+					{tasks.length > 0 && tasks.map((task) => (
 						<Task
 							key={task.id}
 							task={task}
@@ -161,11 +182,18 @@ const Tasks = () => {
 							removeTask={removeTask}
 						/>
 					))}
+					{
+						tasks.length === 0 && (
+							<div>
+								No Tasks Found
+							</div>
+						)
+					}
 				</div>
 			}
-				style={{ margin: '10px'}}
+				style={{ margin: '10px' }}
 			>
-				
+
 			</Card>
 			<div
 				style={{
