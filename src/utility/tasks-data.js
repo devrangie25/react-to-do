@@ -11,22 +11,22 @@ const tasks = [
         title: "Water the Plants",
         completed: false,
         date: "June 1, 2022",
-        category: 'Personal'
+        category: 'Work'
     },
     {
         id: 3,
         title: "Eat Dinner With Jane",
         completed: false,
         date: "June 1, 2022",
-        category: 'Personal'
+        category: 'School'
     },
     {
         id: 4,
         title: "Drink Coffee",
         completed: false,
         date: "June 1, 2022",
-        category: 'Personal'
-    },
+        category: 'Family'
+    }
 ]
 
 export default tasks

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import Task from "./Task"
 import TasksData from "../../utility/tasks-data"
 import Categories from "../../utility/tasks-categories"
@@ -8,9 +8,15 @@ import NewTask from "./NewTask"
 import { MdAdd } from "react-icons/md"
 import Card from "../Card"
 import Select from "../Select"
+import CheckBox from "../CheckBox"
+// import { useParams } from "react-router-dom";
+
+// Custom hook to fetch data from API
+// import useFetch from "../../custom-hooks/useFetch"
 
 const Tasks = () => {
 
+	// const { category } = useParams();
 	const [tasks, setTasks] = useState(TasksData)
 	const [deletingTask, setDeletingTask] = useState(null)
 	const [tasksToDelete, setTasksToDelete] = useState([])
@@ -18,6 +24,12 @@ const Tasks = () => {
 	const [newTask, setNewTask] = useState({ title: '', date: '', category: '' })
 	const [isSaving, setIsSaving] = useState(false)
 	const [categories, setCategories] = useState(Categories)
+	const [category, setCategory] = useState('')
+	const [selectAll, setSelectAll] = useState(false)
+
+	const selectedAllTasks = useCallback(() => {
+		
+	}, [selectAll])
 
 	const checkTask = (task, value) => {
 		setDeletingTask({ ...task, checked: value })
@@ -86,10 +98,6 @@ const Tasks = () => {
 		setShowTaskForm(true)
 	}
 
-	const setAddCategory = () => {
-		setCategories([...categories, { name: 'Add Category' }])
-	}
-
 	const addTaskToTempArr = () => {
 		if (deletingTask !== null && deletingTask.checked) {
 			setTasksToDelete([...tasksToDelete, deletingTask])
@@ -104,12 +112,12 @@ const Tasks = () => {
 	}
 
 	useEffect(() => {
-		setAddCategory()
-	}, [])
-
-	useEffect(() => {
 		addTaskToTempArr()
+		console.log('deletingTask', deletingTask);
 	}, [deletingTask])
+
+	// if (loading) return <div>Loading...</div>;
+	// if (error) return <div>Error: {error.message ? error.message : 'Something went wrong'}</div>;
 
 	return (
 		<div>
@@ -132,7 +140,7 @@ const Tasks = () => {
 					borderRadius: "3px",
 				}}
 			>
-				<Select options={categories} />
+				<Select options={categories} setCategory={setCategory}/>
 			</div>
 			{/* <div
 				className="taskCategoryTitle"
@@ -174,6 +182,7 @@ const Tasks = () => {
 
 			<Card content={
 				<div>
+					<CheckBox setSelectAll={setSelectAll}/>
 					{tasks.length > 0 && tasks.map((task) => (
 						<Task
 							key={task.id}
@@ -191,15 +200,13 @@ const Tasks = () => {
 					}
 				</div>
 			}
-				style={{ margin: '10px' }}
+				style={{ margin: '10px', maxHeight: '100vh', overflow: 'scroll'}}
 			>
-
 			</Card>
 			<div
 				style={{
-					position: "absolute",
 					bottom: "0px",
-					padding: "10px",
+					padding: "0px 10px 10px 10px",
 					width: "100%",
 				}}
 			>
