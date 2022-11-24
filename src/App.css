@@ -72,3 +72,9 @@
   align-items: center;
   justify-content: space-between;
 }
+
+.select-all-check-box {
+  margin-bottom: 0.6rem;
+  padding: 0.1rem;
+  display: flex;
+}
